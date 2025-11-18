@@ -1,0 +1,35 @@
+name: Deploy to Render
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Build with Maven
+      run: ./mvnw clean package -DskipTests
+      
+    - name: Deploy to Render
+      env:
+        RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      run: |
+        echo "Build completed successfully!"
+        echo "To deploy to Render:"
+        echo "1. Connect your GitHub repository to Render"
+        echo "2. Render will auto-deploy on push to main branch"
+        echo "3. Or manually trigger deployment from Render dashboard"
