@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+  namespace: coopcontrol
+data:
+  MYSQL_DATABASE: "courseproject"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+  namespace: coopcontrol
+type: Opaque
+stringData:
+  MYSQL_ROOT_PASSWORD: "Plum409r-"  # Change this in production!
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: coopcontrol
+data:
+  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql-service:3306/courseproject?useSSL=false&serverTimezone=UTC"
+  SPRING_DATASOURCE_USERNAME: "root"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: coopcontrol-mysql
+    environment:
+      MYSQL_DATABASE: courseproject
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-Plum409r-}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - coopcontrol-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-Plum409r-}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: coopcontrol-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/courseproject?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-Plum409r-}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - coopcontrol-network
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+    driver: local
+
+networks:
+  coopcontrol-network:
+    driver: bridge
