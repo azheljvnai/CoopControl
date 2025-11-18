@@ -11,6 +11,23 @@ This guide provides instructions for deploying the CoopControl application using
 
 ## Quick Start
 
+### Option A: Automated Deployment (Recommended)
+
+Use the deployment script for a fully automated setup:
+
+```bash
+./deploy.sh
+```
+
+This script will:
+1. Build the JAR file
+2. Create a `.env` file if it doesn't exist
+3. Build and start Docker containers
+4. Wait for services to be ready
+5. Display the application URL and useful commands
+
+### Option B: Manual Deployment
+
 ### 1. Clone the Repository
 
 ```bash
@@ -33,7 +50,17 @@ Edit `.env` to customize your configuration if needed:
 MYSQL_ROOT_PASSWORD=your_secure_password
 ```
 
-### 3. Deploy with Docker Compose
+### 3. Build the Application
+
+Build the JAR file locally:
+
+```bash
+./mvnw clean package -DskipTests
+```
+
+This will create a JAR file in the `target/` directory.
+
+### 4. Deploy with Docker Compose
 
 Build and start all services:
 
@@ -42,13 +69,13 @@ docker-compose up -d
 ```
 
 This command will:
-- Build the CoopControl application Docker image
+- Build the CoopControl application Docker image (using the JAR from step 3)
 - Pull the MySQL 8.0 image
 - Create and start both containers
 - Set up a private network for the containers
 - Create a persistent volume for MySQL data
 
-### 4. Verify Deployment
+### 5. Verify Deployment
 
 Check that all services are running:
 
@@ -64,7 +91,7 @@ View application logs:
 docker-compose logs -f app
 ```
 
-### 5. Access the Application
+### 6. Access the Application
 
 - **Web Application**: http://localhost:8080
 - **API Documentation**: http://localhost:8080/swagger-ui.html
@@ -115,6 +142,9 @@ docker-compose logs -f mysql
 After making code changes:
 
 ```bash
+# Rebuild the JAR file
+./mvnw clean package -DskipTests
+
 # Rebuild the application image
 docker-compose build app
 
